@@ -57,3 +57,28 @@ Three deliberate differences:
 The page ships in English, Portuguese and Spanish. The switcher persists the
 choice in `localStorage` under `sveflare-lang`. Terminal transcripts stay in
 English in every language, since that is what terminals emit.
+
+## Deploy
+
+Hosted on Netlify as a **static export**. There is no serverless runtime and no
+`@netlify/plugin-nextjs`, because every route prerenders to HTML.
+
+`netlify.toml` is the single source of truth for the build, and it is read
+identically whether the deploy comes from the CLI or from Netlify building this
+connected repository:
+
+- build command `npm run build`
+- publish directory `out`
+- `NODE_VERSION` pinned to 22
+- `/_next/static/*` cached immutably, HTML revalidated on every deploy
+
+```bash
+npm run build     # writes out/
+npm run preview   # serves out/ locally, since `next start` cannot serve an export
+npm run deploy    # build, then push to production (needs `npx netlify-cli login` once)
+```
+
+To connect the repository instead of deploying by hand: Netlify dashboard,
+Add new site, Import an existing project, pick `Jujubalandia/sveflare-landing`.
+Netlify reads `netlify.toml`, builds, publishes, and redeploys on every push
+to `main`.
